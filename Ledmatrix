@@ -25,6 +25,7 @@ int waarde2 =0;
 //K5 K3 K6 R4 K8 R6 R7 K7 originele positie eerste bit register
 
 //R1 R2 K2 R8 K4 R3 R5 K1
+
 byte test1[]= { 0b00011000,// test matrix met vierkant vorm code 
                 0b00111100,
                 0b01111110,
@@ -58,7 +59,8 @@ int potentiometer(byte A, byte B);
       pinMode(schakelaar3,INPUT);
      
     }
-
+    
+void displaymatrix(byte K , byte R); // Functie voor de rijen en kollomen te ordenen.
 
 void loop() 
 {
