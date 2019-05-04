@@ -1,6 +1,7 @@
 /**
 * Auteur: Van Puyenbroeck Glen
-*
+* Auteur: 
+* Auteur:
 * Bronvermelding : Testmatrix  stijn boutsen
 *https://randomnerdtutorials.com/guide-for-8x8-dot-matrix-max7219-with-arduino-pong-game/
 *https://www.youtube.com/watch?v=NM7wXta8crM
@@ -12,6 +13,7 @@
 //Definiëren van de uitganspinnen
 const int schakelaar = 2 ;
 const int schakelaar2 = 3 ;
+const int schakelaar3 = 7;
 
 const int shiftClockPin = 4;  //SH
 const int latchClockPin = 5;  //ST
@@ -45,6 +47,30 @@ byte test2[]={  0b11100111,
                 0b11100111,
                 0b00000000};
                 
+ byte test3[]={0b10000000,
+                0b11000000,
+                0b11100000,
+                0b11110000,
+                0b11111000,
+                0b11111100,
+                0b11111110,
+                0b11111111};
+
+byte test4={0b00000000};
+
+byte test5={0b11111111};
+
+byte test6[]={0b10000000,
+            0b11000000,
+            0b11100000,
+            0b11110000,
+            0b11111000,
+            0b11111100,
+            0b11111110,
+            0b11111111};
+               
+                
+                
 void displaymatrix(byte K , byte R); // Functie voor de rijen en kollomen te ordenen.
 int potentiometer(byte A, byte B); 
 
@@ -70,7 +96,6 @@ void loop()
   waarde2=digitalRead(schakelaar2);
   
   waarde3=digitalRead(schakelaar3);
-
     
       displaymatrix(test1[3],test2[3]);
        
@@ -91,7 +116,33 @@ void loop()
                                                                    displaymatrix(test1[i],test2[i]);
                                                                    delay(150);
                                                       }                                  
-                  }
+                     }
+                     
+       if(waarde3 == HIGH)
+                  {
+                              for(int i = 0 ; i < 8 ; i++ ) 
+                                                  {  
+                                                   displaymatrix(test3[i],test4 >> i ); 
+                                                   
+                                                               delay(100);       
+                                                  }   
+                                                  
+                              for(int i = 0 ; i < 8 ; i++ ) 
+                                                   {   
+                                       
+                                                              displaymatrix(~test3[i] ,test4);
+                                                              delay(100);
+                                                    }   
+                           
+                             for(int i = 0 ; i < 8 ; i++ ) 
+                                                  {  
+                                                   displaymatrix(test5,~test6[i] ); 
+                                                   
+                                                               delay(100);       
+                                                  }
+                            
+                                                                                                              
+                  }              
 delay(10); 
 }
  
