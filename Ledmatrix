@@ -105,3 +105,14 @@ void displayData(byte message) {
   digitalWrite(latchClockPin, LOW);
 
 }
+
+void displaymatrix(byte K , byte R) // functie voor code omzetting rijen en kollomen (werd toegevoegd)
+{
+  //k1,k2,k3,k4,k5,k6,k7,k8
+   byte a = ((K << 4 ) & 0x80) | ((K << 1) & 0x40 ) | ((K << 3 ) & 0x20) | (R & 0x10) |((K << 3) & 0x08) |(R & 0x04) | (R & 0x02)|((K >> 1 ) & 0x01 );
+   displayData(a);
+
+  //r1,r2,r3,r4,r5,r6,r7,r8
+   byte b = (R & 0x80)| (R & 0x40)|((K >> 1) & 0x20) | ((R << 4) & 0x10) | ((K >> 1) & 0x08) | ((R >> 3) & 0x04) | ((R >> 2) & 0x02) | ((K >> 7)& 0x01); 
+   displayData(b);
+}
