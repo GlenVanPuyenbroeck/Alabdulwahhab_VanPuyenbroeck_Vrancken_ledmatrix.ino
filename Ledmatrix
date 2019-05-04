@@ -1,8 +1,10 @@
-/**
-* Auteur: Van Puyenbroeck Glen
-* Auteur: 
-* Auteur:
-* Bronvermelding : Testmatrix  stijn boutsen
+/*
+* Auteur 1: Alabdulwahhab Ali
+* Auteur 2: Van Puyenbroeck Glen
+* Auteur 3: Wesley Vrancken
+* Link naar github repository: https://github.com/GlenVanPuyenbroeck/Alabdulwahhab_VanPuyenbroeck_Vrancken_ledmatrix.ino
+*
+* Source reference : Testmatrix  stijn boutsen
 *https://randomnerdtutorials.com/guide-for-8x8-dot-matrix-max7219-with-arduino-pong-game/
 *https://www.youtube.com/watch?v=NM7wXta8crM
 *https://www.instructables.com/id/LEDS-With-a-Potentiometer/
@@ -10,25 +12,38 @@
 *https://www.arduino.cc/en/tutorial/potentiometer
 */
 
-//Definiëren van de uitganspinnen
-const int schakelaar = 2 ;
-const int schakelaar2 = 3 ;
-const int schakelaar3 = 7;
+//Definiëren van de uitganspinnen -> const int omdat dit duid op de waarde van de pinnen, deze blijven ongewijzigd.
 
-const int shiftClockPin = 4;  //SH
-const int latchClockPin = 5;  //ST
-const int serialInputPin = 9; //DS
+/*Socket PMOD5:
+ *VCC -> Socket 5.0V BUS
+ *GND -> Socket GND  BUS
+ */
 
-
-int waarde= 0;
-int waarde2 =0; 
+/*Socket PMOD5 -> Arduino*/
+const int SW1= 2;
+const int SW2= 3;
 
 
-//K5 K3 K6 R4 K8 R6 R7 K7 originele positie eerste bit register
+/*Socket PMOD6:
+ *VCC -> Socket 5.0V BUS
+ *GND -> Socket GND  BUS
+ */
+ 
+/*Socket PMOD6 -> Arduino*/
+const int SW3= 7;
 
-//R1 R2 K2 R8 K4 R3 R5 K1
+/*Socket LEDMATRIX -> Arduino*/
+const int shiftClockPin  = 4;  //SH
+const int latchClockPin  = 5;  //ST
+const int serialInputPin = 9;  //DS
 
-byte test1[]= { 0b00011000,// test matrix met vierkant vorm code 
+/*test matrix met vierkant vorm code 
+ *Byte is hier een unsigned char, deze gaat tot 255.
+ *Byte test1 en 2 behoren bij elkaar.
+ *originele positie eerste bit register:
+ *K5 K3 K6 R4 K8 R6 R7 K7
+ *Kolom*/
+byte test1[]= { 0b00011000,
                 0b00111100,
                 0b01111110,
                 0b11111111,
@@ -37,7 +52,9 @@ byte test1[]= { 0b00011000,// test matrix met vierkant vorm code
                 0b00011000,
                 0b00000000};
 
- //R1 R2 K2 R8 K4 R3 R5 K1    originele positie 2de bit register           
+/*Originele positie 2de bit register.
+ *R1 R2 K2 R8 K4 R3 R5 K1
+ *Rij*/         
 byte test2[]={  0b11100111,
                 0b11000011,
                 0b10000001,
@@ -47,7 +64,8 @@ byte test2[]={  0b11100111,
                 0b11100111,
                 0b00000000};
                 
- byte test3[]={0b10000000,
+/*Byte test 3 en 4 horen bij elkaar.*/                 
+byte test3[]={  0b10000000,
                 0b11000000,
                 0b11100000,
                 0b11110000,
@@ -56,116 +74,119 @@ byte test2[]={  0b11100111,
                 0b11111110,
                 0b11111111};
 
-byte test4={0b00000000};
+byte test4=  {  0b00000000};
 
-byte test5={0b11111111};
+/*Byte test 3 en 4 horen bij elkaar.*/ 
+byte test5=  {  0b11111111};
 
-byte test6[]={0b10000000,
-            0b11000000,
-            0b11100000,
-            0b11110000,
-            0b11111000,
-            0b11111100,
-            0b11111110,
-            0b11111111};
+byte test6[]={  0b10000000,
+                0b11000000,
+                0b11100000,
+                0b11110000,
+                0b11111000,
+                0b11111100,
+                0b11111110,
+                0b11111111};
                
                 
-                
-void displaymatrix(byte K , byte R); // Functie voor de rijen en kollomen te ordenen.
+/*Functie voor de rijen en kolommen te ordenen.*/               
+void displaymatrix(byte K , byte R); 
 int potentiometer(byte A, byte B); 
 
-    void setup() {
-      //Instelen van de uitgangspinnen
-      Serial.begin(9600);
-      pinMode(shiftClockPin, OUTPUT);
-      pinMode(latchClockPin, OUTPUT);
-      pinMode(serialInputPin, OUTPUT);
-      pinMode(schakelaar,INPUT);
-      pinMode(schakelaar2,INPUT);
-      pinMode(schakelaar3,INPUT);
-     
+    //Instellen van de uitgangspinnen
+    void setup() 
+    {
+       Serial.begin(9600);
+       pinMode(shiftClockPin, OUTPUT);
+       pinMode(latchClockPin, OUTPUT);
+       pinMode(serialInputPin, OUTPUT);
+       pinMode(SW1,INPUT);
+       pinMode(SW2,INPUT);
+       pinMode(SW3,INPUT);
     }
     
-void displaymatrix(byte K , byte R); // Functie voor de rijen en kollomen te ordenen.
+/*Functie voor de rijen en kollomen te ordenen.*/    
+void displaymatrix(byte K , byte R);
 
 void loop() 
 {
-
-  waarde= digitalRead(schakelaar);
-  
-  waarde2=digitalRead(schakelaar2);
-  
-  waarde3=digitalRead(schakelaar3);
+       waarde1= digitalRead(SW1);
+       waarde2=digitalRead(SW2);
+       waarde3=digitalRead(SW3);
     
-      displaymatrix(test1[3],test2[3]);
+       displaymatrix(test1[3],test2[3]);
        
-      if(waarde == LOW)
-      {
-                  for(int i = 0 ; i < 8 ; i++ ) //scherm vult zich geleidelijk in vierkant vorm
-                  {   
-                               displaymatrix(test1[i],test2[i]);
-                               delay(300);
-                  }
-            
-      }
-
-      if(waarde2 ==LOW)
-                      {
-                              for(int i = 0 ; i < 8 ; i++ ) //scherm vult zich geleidelijk in vierkant vorm
+       if(waarde == LOW)
+       {
+                              for(int i = 0 ; i < 8 ; i++) 
                                                       {   
+                                                                   /*Ledmatrix vult zich geleidelijk in vierkant vorm.*/
+                                                                   displaymatrix(test1[i],test2[i]);
+                                                                   delay(300);
+                                                      }
+            
+       }
+
+       if(waarde2 ==LOW)
+       {
+                              for(int i = 0 ; i < 8 ; i++) 
+                                                      {   
+                                                                   /*Ledmatrix vult zich geleidelijk in vierkant vorm.*/
                                                                    displaymatrix(test1[i],test2[i]);
                                                                    delay(150);
                                                       }                                  
-                     }
+       }
                      
        if(waarde3 == HIGH)
-                  {
-                              for(int i = 0 ; i < 8 ; i++ ) 
-                                                  {  
-                                                   displaymatrix(test3[i],test4 >> i ); 
-                                                   
-                                                               delay(100);       
-                                                  }   
+       {
+                              for(int i = 0 ; i < 8 ; i++) 
+                                                      {  
+                                                                   displaymatrix(test3[i],test4 >> i ); 
+                                                                   delay(100);       
+                                                      }   
                                                   
-                              for(int i = 0 ; i < 8 ; i++ ) 
-                                                   {   
-                                       
-                                                              displaymatrix(~test3[i] ,test4);
-                                                              delay(100);
-                                                    }   
+                              for(int i = 0 ; i < 8 ; i++) 
+                                                      {   
+                                                                   displaymatrix(~test3[i] ,test4);
+                                                                   delay(100);
+                                                      }   
                            
-                             for(int i = 0 ; i < 8 ; i++ ) 
-                                                  {  
-                                                   displaymatrix(test5,~test6[i] ); 
-                                                   
-                                                               delay(100);       
-                                                  }
+                             for(int i = 0 ; i < 8 ; i++) 
+                                                      {  
+                                                                   displaymatrix(test5,~test6[i] ); 
+                                                                   delay(100);       
+                                                      }
                             
                                                                                                               
-                  }              
+       }              
 delay(10); 
 }
  
 
-void displayData(byte message) {
-  // put your main code here, to run repeatedly:
-      for (int i = 0; i <= 7; i++) {
-        digitalWrite(serialInputPin, bitRead(message, i));// print de message uit
-        digitalWrite(shiftClockPin, HIGH);
-        digitalWrite(shiftClockPin, LOW);
-      }
-  digitalWrite(latchClockPin, HIGH);
-  digitalWrite(latchClockPin, LOW);
-
+void displayData(byte message) 
+{
+      /*Main code herhaaldelijk uitvoeren:*/
+      for (int i = 0; i <= 7; i++) 
+       {
+          /*Verzend de signalen van de Arduino naar de ledmatrix*/
+          digitalWrite(serialInputPin, bitRead(message, i));
+          digitalWrite(shiftClockPin, HIGH);
+          digitalWrite(shiftClockPin, LOW);
+       }
+          digitalWrite(latchClockPin, HIGH);
+          digitalWrite(latchClockPin, LOW);
+          
 }
 
-void displaymatrix(byte K , byte R) // functie voor code omzetting rijen en kollomen (werd toegevoegd)
+
+/*Functie voor code omzetting rijen en kolommen doormiddel van het shiftbitregister.*/
+void displaymatrix(byte K , byte R) 
 {
-  //k1,k2,k3,k4,k5,k6,k7,k8
+   //K1, K2, K3, K4, K5, K6, K7, K8
    byte a = ((K << 4 ) & 0x80) | ((K << 1) & 0x40 ) | ((K << 3 ) & 0x20) | (R & 0x10) |((K << 3) & 0x08) |(R & 0x04) | (R & 0x02)|((K >> 1 ) & 0x01 );
    displayData(a);
 
-  //r1,r2,r3,r4,r5,r6,r7,r8
+   //R1, R2, R3, R4, R5, R6, R7, R8
    byte b = (R & 0x80)| (R & 0x40)|((K >> 1) & 0x20) | ((R << 4) & 0x10) | ((K >> 1) & 0x08) | ((R >> 3) & 0x04) | ((R >> 2) & 0x02) | ((K >> 7)& 0x01); 
    displayData(b);
 }
