@@ -11,7 +11,6 @@
 *https://www.reddit.com/r/arduino/comments/5kvaln/having_trouble_with_ifelse_and_potentiometer/
 *https://www.arduino.cc/en/tutorial/potentiometer
 */
-
 //Definiëren van de uitganspinnen -> const int omdat dit duid op de waarde van de pinnen, deze blijven ongewijzigd.
 
 /*Socket PMOD5:
@@ -19,7 +18,7 @@
  *GND -> Socket GND  BUS
  */
 
-/*Socket PMOD5 -> Arduino*/
+//Socket PMOD5 -> Arduino
 const int SW1= 2;
 const int SW2= 3;
 
@@ -29,10 +28,12 @@ const int SW2= 3;
  *GND -> Socket GND  BUS
  */
  
-/*Socket PMOD6 -> Arduino*/
+//Socket PMOD6 -> Arduino
 const int SW3= 7;
+const int SW4= 8;
 
-/*Socket LEDMATRIX -> Arduino*/
+
+//Socket LEDMATRIX -> Arduino
 const int shiftClockPin  = 4;  //SH
 const int latchClockPin  = 5;  //ST
 const int serialInputPin = 9;  //DS
@@ -43,7 +44,7 @@ const int serialInputPin = 9;  //DS
  *originele positie eerste bit register:
  *K5 K3 K6 R4 K8 R6 R7 K7
  *Kolom*/
-byte test1[]= { 0b00011000,
+byte test1[]={  0b00011000,
                 0b00111100,
                 0b01111110,
                 0b11111111,
@@ -52,9 +53,9 @@ byte test1[]= { 0b00011000,
                 0b00011000,
                 0b00000000};
 
-/*Originele positie 2de bit register.
- *R1 R2 K2 R8 K4 R3 R5 K1
- *Rij*/         
+//Originele positie 2de bit register.
+//R1 R2 K2 R8 K4 R3 R5 K1
+//Rij          
 byte test2[]={  0b11100111,
                 0b11000011,
                 0b10000001,
@@ -64,8 +65,9 @@ byte test2[]={  0b11100111,
                 0b11100111,
                 0b00000000};
                 
-/*Byte test 3 en 4 horen bij elkaar.*/                 
-byte test3[]={  0b10000000,
+//Byte test 3 en 4 horen bij elkaar.
+//Kolom                
+byte test3[]={  0b10000000, 
                 0b11000000,
                 0b11100000,
                 0b11110000,
@@ -73,120 +75,142 @@ byte test3[]={  0b10000000,
                 0b11111100,
                 0b11111110,
                 0b11111111};
+//Rij
+byte test4={    0b00000000};
 
-byte test4=  {  0b00000000};
 
-/*Byte test 3 en 4 horen bij elkaar.*/ 
-byte test5=  {  0b11111111};
+//Kolom
+byte test5[]={  0b11100111,
+                0b11000011,
+                0b10000001,
+                0b00000000,
+                0b10000001,
+                0b11000011,
+                0b11100111,
+                0b00000000};
 
-byte test6[]={  0b10000000,
-                0b11000000,
-                0b11100000,
-                0b11110000,
-                0b11111000,
-                0b11111100,
-                0b11111110,
-                0b11111111};
-               
-                
-/*Functie voor de rijen en kolommen te ordenen.*/               
-void displaymatrix(byte K , byte R); 
-int potentiometer(byte A, byte B); 
+//Originele positie 2de bit register.
+//R1 R2 K2 R8 K4 R3 R5 K1
+//Rij          
+byte test6[]={  0b00011000,
+                0b00111100,
+                0b01111110,
+                0b11111111,
+                0b01111110,
+                0b00111100,
+                0b00011000,
+                0b00000000};
 
-    //Instellen van de uitgangspinnen
-    void setup() 
-    {
-       Serial.begin(9600);
-       pinMode(shiftClockPin, OUTPUT);
-       pinMode(latchClockPin, OUTPUT);
-       pinMode(serialInputPin, OUTPUT);
-       pinMode(SW1,INPUT);
-       pinMode(SW2,INPUT);
-       pinMode(SW3,INPUT);
-    }
-    
-/*Functie voor de rijen en kollomen te ordenen.*/    
-void displaymatrix(byte K , byte R);
+void displaymatrix(byte k , byte R); 
+ int waarde1;
+ int waarde2;
+ int waarde3;
+ int waarde4;
+  
+//Instellen van de uitgangspinnen.
+void setup() 
+{
+      pinMode(shiftClockPin, OUTPUT);
+      pinMode(latchClockPin, OUTPUT);
+      pinMode(serialInputPin, OUTPUT);
+
+  
+}
 
 void loop() 
-{
-       waarde1= digitalRead(SW1);
-       waarde2=digitalRead(SW2);
-       waarde3=digitalRead(SW3);
+     {//Verlicht vanuit het center en verlicht vervolgens vertraagd naar de buitenkant toe.
+      waarde1=digitalRead(SW1);
+      //Verlicht vanuit het center en verlicht vervolgens snel naar de buitenkant toe.
+      waarde2=digitalRead(SW2);
+      //Vertrekt van links naar rechts en hierna vertrekt deze van boven naar beneden.
+      waarde3=digitalRead(SW3);
+      //Start met kruispatroon, deze wordt groter waardoor dit niet meer waar te nemen is op de 8X8 ledmatrix.
+      waarde4=digitalRead(SW4);
+
+
     
-       displaymatrix(test1[3],test2[3]);
+      displaymatrix(test1[3],test2[3]);
        
-       if(waarde == LOW)
-       {
-                              for(int i = 0 ; i < 8 ; i++) 
+      /*SW1 en 2 werken geïnverteerd bij de PCB Van PXL.*/
+      /*LOW=invers */  
+      if(waarde1== LOW) 
+                      {       /*8 staat hier voor het overlopen van de 8X8 ledmatrix.*/  
+                              for(int i = 0 ; i < 8 ; i++)
                                                       {   
-                                                                   /*Ledmatrix vult zich geleidelijk in vierkant vorm.*/
-                                                                   displaymatrix(test1[i],test2[i]);
-                                                                   delay(300);
+                                                              
+                                                              displaymatrix(test1[i],test2[i]);
+                                                              /*De tijdsvertraging van het oplichten.*/
+                                                              delay(300);
                                                       }
             
-       }
+                      }
 
-       if(waarde2 ==LOW)
-       {
+      if(waarde2 ==LOW)
+                      {
                               for(int i = 0 ; i < 8 ; i++) 
-                                                      {   
-                                                                   /*Ledmatrix vult zich geleidelijk in vierkant vorm.*/
-                                                                   displaymatrix(test1[i],test2[i]);
-                                                                   delay(150);
+                                                      {     
+                                                               
+                                                               displaymatrix(test1[i],test2[i]);
+                                                               /*De tijdsversnelling van het oplichten.*/
+                                                               delay(150);
                                                       }                                  
-       }
-                     
-       if(waarde3 == HIGH)
-       {
+                      }
+
+      if(waarde3 == HIGH)
+                      {
                               for(int i = 0 ; i < 8 ; i++) 
                                                       {  
-                                                                   displaymatrix(test3[i],test4 >> i ); 
-                                                                   delay(100);       
+                                                               /* i wordt opgeteld, de 1 bij test 4 verplaats zich binaire naar rechts, het hoeft zo geen 8 array te zijn*/
+                                                               displaymatrix(test3[i],test4 >> i ); 
+                                                               delay(100);       
                                                       }   
                                                   
                               for(int i = 0 ; i < 8 ; i++) 
                                                       {   
-                                                                   displaymatrix(~test3[i] ,test4);
-                                                                   delay(100);
-                                                      }   
-                           
-                             for(int i = 0 ; i < 8 ; i++) 
-                                                      {  
-                                                                   displaymatrix(test5,~test6[i] ); 
-                                                                   delay(100);       
+                                                               /* schrijfwijze is makkelijker met een geinverteerde bitwise ~, 0 word 1 en 1 word 0 */
+                                                               displaymatrix(~test3[i] ,test4); 
+                                                               delay(100);
                                                       }
-                            
-                                                                                                              
-       }              
-delay(10); 
-}
- 
+                      }
+      if(waarde4== HIGH) 
+                      {       
+                              for(int i = 0 ; i < 8 ; i++)
+                                                      {   
+                                                              
+                                                              displaymatrix(test5[i],test6[i]);
+                                                              /*De tijdsvertraging van het oplichten.*/
+                                                              delay(300);
+                                                      }
+            
+                      }
 
-void displayData(byte message) 
-{
-      /*Main code herhaaldelijk uitvoeren:*/
-      for (int i = 0; i <= 7; i++) 
-       {
-          /*Verzend de signalen van de Arduino naar de ledmatrix*/
-          digitalWrite(serialInputPin, bitRead(message, i));
-          digitalWrite(shiftClockPin, HIGH);
-          digitalWrite(shiftClockPin, LOW);
-       }
-          digitalWrite(latchClockPin, HIGH);
-          digitalWrite(latchClockPin, LOW);
-          
+        /*Reactietijd van de schakelaar */                   
+        delay(10);      
 }
 
+void displayData(byte message) {
+  /*Main code herhaaldelijk uitvoeren:*/
+  for (int i = 0; i <= 7; i++) 
+  { 
+    /*Verzend de signalen van de Arduino naar de ledmatrix*/
+    digitalWrite(serialInputPin, bitRead(message, i));
+    digitalWrite(shiftClockPin, HIGH);
+    digitalWrite(shiftClockPin, LOW);
+  }
+    digitalWrite(latchClockPin, HIGH);
+    digitalWrite(latchClockPin, LOW);
 
-/*Functie voor code omzetting rijen en kolommen doormiddel van het shiftbitregister.*/
+}
+
+/* functie voor code omzetting rijen en kolommen doormiddel van een shiftbitregister.*/
 void displaymatrix(byte K , byte R) 
-{
-   //K1, K2, K3, K4, K5, K6, K7, K8
-   byte a = ((K << 4 ) & 0x80) | ((K << 1) & 0x40 ) | ((K << 3 ) & 0x20) | (R & 0x10) |((K << 3) & 0x08) |(R & 0x04) | (R & 0x02)|((K >> 1 ) & 0x01 );
-   displayData(a);
 
-   //R1, R2, R3, R4, R5, R6, R7, R8
-   byte b = (R & 0x80)| (R & 0x40)|((K >> 1) & 0x20) | ((R << 4) & 0x10) | ((K >> 1) & 0x08) | ((R >> 3) & 0x04) | ((R >> 2) & 0x02) | ((K >> 7)& 0x01); 
-   displayData(b);
+{
+    //K1, K2, K3, K4, K5, K6, K7, K8
+    byte a = ((K << 4 ) & 0x80) | ((K << 1) & 0x40 ) | ((K << 3 ) & 0x20) | (R & 0x10) |((K << 3) & 0x08) |(R & 0x04) | (R & 0x02)|((K >> 1 ) & 0x01 );
+    displayData(a);
+    
+    //R1, R2, R3, R4, R5, R6, R7, R8
+    byte b = (R & 0x80)| (R & 0x40)|((K >> 1) & 0x20) | ((R << 4) & 0x10) | ((K >> 1) & 0x08) | ((R >> 3) & 0x04) | ((R >> 2) & 0x02) | ((K >> 7)& 0x01); 
+    displayData(b);
 }
